@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>学生学籍信息管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <script type="text/javascript" src="static/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="./static/layui/css/layui.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a>
+          <cite>学生学籍信息</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+          <input class="layui-input" placeholder="开始日" name="start" id="start">
+          <input class="layui-input" placeholder="截止日" name="end" id="end">
+          <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+
+        </form>
+      </div>
+      <xblock id="roll_xblock">
+        <button class="layui-btn" onclick="x_admin_show('添加学生学籍信息','./students-Roll-list-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="roll_divPageNum"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray" id="roll_divPage"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="roll_divtotal"></div>
+
+      </xblock>
+      <table class="layui-table" id="roll_tableList">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>学籍号</th>
+            <th>学生编号</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>现住址</th>
+            <th>户籍所在地</th>
+            <th>入学日期</th>
+            <th>学生来源</th>
+            <th>就读方式</th>
+            <th>入学方式</th>
+            <th>所在院/系</th>
+            <th>所读专业</th>
+            <th>年级</th>
+            <th>班级</th>
+            <th>状态</th>
+            <th>操作</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div class="page">
+        <div id="roll_PagePilot">
+
+        </div>
+      </div>
+
+    </div>
+    <script>
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      })
+
+
+
+      </script>
+      <script>
+      //首页点击自动跳转第一页
+      $(function() {
+          to_page(1)
+      });
+      //===============================================================================
+      function to_page(pn) {
+          $.ajax({
+              url : "http://localhost:8080/RollList",
+              data : "pn=" + pn,
+              type : "GET",
+              success : function(result) {
+                  //解析并显示学籍信息
+                  build_roll_table(result);
+                  //解析并显示分页信息
+                  build_page_roll_xblock(result);
+                  //解析并显示分页条
+                  build_page_roll_PagePilot(result);
+              }
+          });
+      }
+
+      //个人学籍信息列表
+      function build_roll_table(result) {
+          //清空缓存
+          $("#roll_tableList tbody").empty();
+          //console.log()
+          //取出列表信息
+          var roll = result.userMsg.pageInfo.list;
+          $.each(roll, function (index, item) {
+              //失效部分
+              var roll_checkboxDiv = $("<div></div>").addClass("layui-unselect layui-form-checkbox").attr("lay-skin", "primary").attr("data-id", "2");
+              var roll_checkboxI = $("<i></i>").addClass("layui-icon").append("&#xe605;");
+              var roll_checkboxListTd = $("<td></td>").append(roll_checkboxDiv).append(roll_checkboxI);
+
+              var roll_rollIdListTd = $("<td>" + item.rollId + "</td>");
+              var roll_stuRollIdListTd = $("<td>" + item.stuRollId + "</td>");
+              var roll_stuNameListTd = $("<td>" + item.students.stuName + "</td>");
+              var roll_stuAgeListTd = $("<td>" + item.students.stuAge + "</td>");
+              var roll_stuHomeListTd = $("<td>" + item.students.stuHome + "</td>");
+              var roll_stuAddressListTd = $("<td>" + item.students.stuAddress + "</td>");
+              var roll_rollStudyingDateListTd = $("<td>" + item.rollStudyingDate + "</td>");
+              var roll_rollStudyingSourceListTd = $("<td>" + item.rollStudyingSource + "</td>");
+              var roll_rollStudyingWayListTd = $("<td></td>").append(item.rollStudyingWay=='H'?
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-green\">住校</span></td>":
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-orange\">走读</span></td>");
+              var roll_rollStudyingFormListTd = $("<td></td>").append(item.rollStudyingForm=='L'?
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-green\">录取</span></td>":
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-orange\">借读</span></td>");
+              var roll_acaNameListTd = $("<td>" + item.academy.acaName + "</td>");
+              var roll_majNameListTd = $("<td>" + item.major.majName + "</td>");
+              var roll_gradeNameListTd = $("<td>" + item.grade.gradeName + "</td>");
+              var roll_classNameListTd = $("<td>" + item.sclass.className + "</td>");
+              var roll_rollStatusListTd = $("<td></td>").append(item.rollStatus=='1'?
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini \" style='background-color: #5FB878' >已注册</span></td>":
+                  "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-red\">已注销</span></td>");
+
+              var roll_ahrefDeleteTd = $("<a></a>").attr("href", "#").
+              append("<i></i>").addClass("layui-icon layui-icon-delete").
+              attr("title", "删除信息").attr("style", "font-size: 20px; color: #FF5722;");
+              //绑定id
+              roll_ahrefDeleteTd.attr("roll_DeleteBtn", item.rollId);
+
+              var roll_ahrefSelectTd = $("<a></a>").attr("href", "#").
+              append("<i></i>").addClass("layui-icon layui-icon-form").
+              attr("title", "查询信息").attr("style", "font-size: 20px; color: #2F4056;");
+              //绑定id
+              roll_ahrefSelectTd.attr("roll_SelectBtn", item.rollId);
+
+              var rollahrefTd = $("<td></td>").append(roll_ahrefDeleteTd).append(roll_ahrefSelectTd);
+              //append方法执行完以后返回原来的元素
+              $("<tr></tr>").append(roll_checkboxListTd).append(roll_rollIdListTd).append(roll_stuRollIdListTd)
+                  .append(roll_stuNameListTd).append(roll_stuAgeListTd).append(roll_stuHomeListTd)
+                  .append(roll_stuAddressListTd).append(roll_rollStudyingDateListTd)
+                  .append(roll_rollStudyingSourceListTd).append(roll_rollStudyingWayListTd)
+                  .append(roll_rollStudyingFormListTd).append(roll_acaNameListTd)
+                  .append(roll_majNameListTd).append(roll_gradeNameListTd)
+                  .append(roll_classNameListTd).append(roll_rollStatusListTd)
+                  .append(rollahrefTd).appendTo("#roll_tableList");
+          })
+      }
+      
+      //分页信息显示
+        function build_page_roll_xblock(result) {
+            $("#roll_divtotal").empty();
+            $("#roll_divPage").empty();
+            $("#roll_divPageNum").empty();
+            $("#roll_divtotal").append("当前第").append("<span>"+result.userMsg.pageInfo.pageNum+"</span>").append("页");
+            $("#roll_divPage").append("共").append("<span>"+result.userMsg.pageInfo.pages+"</span>").append("页信息");
+            $("#roll_divPageNum").append("共").append("<span>"+result.userMsg.pageInfo.total+"</span>").append("条信息");
+            currentPage = result.userMsg.pageInfo.pageNum;
+            totalPage = result.userMsg.pageInfo.total * 99;
+        }
+
+        //分页条
+        function build_page_roll_PagePilot(result) {
+            //首页
+            $("#roll_PagePilot").empty();
+            var ul = $("<ul></ul>").addClass("pagination");
+            var roll_FirstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href", "#"));
+            var roll_PrevPageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+            //判断是否上一页是否禁用
+            if (result.userMsg.pageInfo.hasPreviousPage == false) {
+                roll_PrevPageLi.addClass("disabled");
+            } else {
+                //不禁用时放行跳转
+                roll_PrevPageLi.click(function() {
+                    to_page(result.userMsg.pageInfo.pageNum - 1);
+                });
+            }
+            roll_FirstPageLi.click(function() {
+                to_page(1);
+            });
+            //========================================================
+            //下一页
+            var roll_NextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
+            //判断是否下一页是否禁用
+            if (result.userMsg.pageInfo.hasNextPage == false) {
+                roll_NextPageLi.addClass("disabled");
+            } else {
+                //不禁用时放行跳转
+                roll_NextPageLi.click(function() {
+                    to_page(result.userMsg.pageInfo.pageNum + 1);
+                });
+            }
+            //尾页
+            var roll_FinallyPageLi = $("<li></li>").append($("<a></a>").append("尾页").attr("href", "#"));
+            roll_FinallyPageLi.click(function() {
+                to_page(result.userMsg.pageInfo.pages);
+            })
+            //=========================================================
+            ul.append(roll_FirstPageLi).append(roll_PrevPageLi);
+            //遍历连续页
+            $.each(result.userMsg.pageInfo.navigatepageNums, function(index, item) {
+                var numLi = $("<li></li>").append($("<a></a>").append(item));
+                //点击连续也跳转
+                numLi.click(function() {
+                    to_page(item)
+                })
+                //判断是否当前页显示状态
+                if (result.userMsg.pageInfo.pageNum == item) {
+                    numLi.addClass("active");
+                }
+                ul.append(numLi);
+            })
+            //拼接下一页等
+            ul.append(roll_NextPageLi).append(roll_FinallyPageLi);
+            var navEle = $("<nav></nav>").append(ul);
+            //拼接总分页到div中
+            navEle.appendTo("#roll_PagePilot");
+        }
+
+      $(document).on("click",".layui-icon-delete",function () {
+          //绑定按钮
+          var rollListDeleteBtn = $(this).parents("tr").find("td:eq(1)").text();
+          console.log(rollListDeleteBtn);
+          console.log($(this).attr("roll_deletebtn"));
+          /*用户-删除*/
+            $.ajax({
+                url:"http://localhost:8080/RollList/" + $(this).attr("roll_deletebtn"),
+                type:"DELETE",
+                success:function (result) {
+                    to_page(currentPage);
+                }
+            })
+      })
+    </script>
+  </body>
+</html>

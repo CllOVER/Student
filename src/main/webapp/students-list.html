@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>Adminostration System</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <script type="text/javascript" src="static/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="./static/layui/css/layui.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body class="layui-anim layui-anim-up">
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a>
+          <cite>学生基础信息</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row" id="searchDiv">
+        <form class="layui-form layui-col-md12 x-so">
+          <input type="text" name="search" id="studentssearch_Input" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <button class="layui-btn" id="studentsSearch_Btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <!--表格上部小导航栏-->
+      <xblock id="students_xblock">
+        <button class="layui-btn" onclick="x_admin_show('添加学生信息','./students-list-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="students_divtotal"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray" id="students_divPage"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="students_divPageNum"></div>
+      </xblock>
+
+      <table class="layui-table" id="students_tableList">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>学生编号</th>
+            <th>学生姓名</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>手机号</th>
+            <th>出生日期</th>
+            <th>身份证号</th>
+            <th>民族</th>
+            <th>邮箱</th>
+            <th>QQ号</th>
+            <th>是否团员</th>
+            <th>是否党员</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+
+      <!--分页条-->
+      <div class="page">
+        <div id="students_PagePilot">
+
+        </div>
+      </div>
+    </div>
+    <script>
+
+      function delAll (argument) {
+
+        var data = tableCheck.getData();
+  
+        layer.confirm('确认要删除吗？'+data,function(index){
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {icon: 1});
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+      }
+    </script>
+    <script>
+        //首页点击自动跳转第一页
+        $(function() {
+            to_page(1)
+        });
+        //===============================================================================
+        //分页条信息跳转函数
+        function to_page(pn) {
+            $.ajax({
+                url : "http://localhost:8080/StudentList",
+                data : "pn=" + pn,
+                type : "GET",
+                success : function(result) {
+                    console.log(result)
+                    //解析并显示员工
+                    build_students_table(result);
+                    //解析并显示分页信息
+                    build_page_students_xblock(result);
+                    //解析并显示分页条
+                    build_page_students_PagePilot(result);
+                }
+            });
+        }
+
+        //学生个人基础信息列表
+
+        function build_students_table(result){
+             //清空缓存
+             $("#students_tableList tbody").empty();
+            //console.log()
+             //取出列表信息
+             var students = result.userMsg.pageInfo.list;
+             $.each(students,function (index,item) {
+/*
+     <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='2'><i class="layui-icon">&#xe605;</i></div>
+           <input type="checkbox" name="" title="发呆" lay-skin="primary">
+            */
+                 var students_checkboxDiv = $("<div></div>").addClass("layui-unselect layui-form-checkbox").
+                      attr("lay-skin","primary").attr("data-id","2");
+                 var students_checkboxI = $("<i></i>").addClass("layui-icon").append("&#xe605;");
+                 var students_checkboxListTd = $("<td></td>").append(students_checkboxDiv).append(students_checkboxI);
+
+                 var students_stuIdListTd = $("<td></td>").append(item.stuId);
+                 var students_stuNameListTd = $("<td></td>").append(item.stuName);
+                 var students_stuSexListTd = $("<td></td>").append(item.stuSex);
+                 var students_stuAgeListTd = $("<td></td>").append(item.stuAge);
+                 var students_stuPhoneListTd = $("<td></td>").append(item.stuPhone);
+                 var students_stuBirthdayListTd = $("<td></td>").append(item.stuBirthday);
+                 var students_stuIdentityListTd = $("<td></td>").append(item.stuIdentity);
+                 var students_stuNationListTd = $("<td></td>").append(item.nation.nationName);
+                 var students_stuEmailListTd = $("<td></td>").append(item.stuEmail);
+                 var students_stuQQListTd = $("<td></td>").append(item.stuQq);
+                 var students_stuLeagueMemberListTd = $("<td></td>").append(item.stuLeagueMember);
+                 var students_stuPartyMemberListTd = $("<td></td>").append(item.stuPartyMember);
+                 var students_ahrefEditTd = $("<a></a>").attr("href","#").
+                      append("<i></i>").addClass("layui-icon layui-icon-edit").
+                            attr("title","编辑信息").attr("style","font-size: 20px; color: #009688;");
+                 //绑定id
+                 students_ahrefEditTd.attr("students_EditBtn", item.stuId);
+
+                 var students_ahrefDeleteTd = $("<a></a>").attr("href","#").
+                      append("<i></i>").addClass("layui-icon layui-icon-delete").
+                            attr("title","删除信息").attr("style","font-size: 20px; color: #FF5722;");
+                 //绑定id
+                 students_ahrefDeleteTd.attr("students_DeleteBtn", item.stuId);
+
+                 var students_ahrefSelectTd = $("<a></a>").attr("href","#").
+                      append("<i></i>").addClass("layui-icon layui-icon-form").
+                            attr("title","查询信息").attr("style","font-size: 20px; color: #2F4056;");
+                  //绑定id
+                 students_ahrefSelectTd.attr("students_SelectBtn", item.stuId);
+
+                 var studentsahrefTd= $("<td></td>").append(students_ahrefEditTd).append(students_ahrefDeleteTd).
+                     append(students_ahrefSelectTd);
+                 //append方法执行完以后返回原来的元素
+                 $("<tr></tr>").append(students_checkboxListTd).append(students_stuIdListTd).append(students_stuNameListTd).append(students_stuSexListTd).
+                      append(students_stuAgeListTd).append(students_stuPhoneListTd).append(students_stuBirthdayListTd).append(students_stuIdentityListTd).
+                            append(students_stuNationListTd).append(students_stuEmailListTd).append(students_stuQQListTd).append(students_stuLeagueMemberListTd).
+                                  append(students_stuPartyMemberListTd).append(studentsahrefTd).appendTo("#students_tableList");
+
+             })
+
+        }
+          //解析并显示分页信息
+        function build_page_students_xblock(result) {
+            $("#students_divPageNum").empty();
+            $("#students_divPage").empty();
+            $("#students_divtotal").empty();
+            $("#students_divPageNum").append("当前第").append("<span>"+result.userMsg.pageInfo.pageNum+"</span>").append("页");
+            $("#students_divPage").append("共").append("<span>"+result.userMsg.pageInfo.pages+"</span>").append("页信息");
+            $("#students_divtotal").append("共").append("<span>"+result.userMsg.pageInfo.total+"</span>").append("条信息");
+
+            currentPage = result.userMsg.pageInfo.pageNum;
+            totalPage = result.userMsg.pageInfo.total * 99;
+           /*console.log(totalPage);*/
+        }
+        //解析并显示分页条
+       function build_page_students_PagePilot(result){
+
+            //首页
+           $("#students_PagePilot").empty();
+           var ul = $("<ul></ul>").addClass("pagination");
+            var students_FirstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href", "#"));
+            var students_PrevPageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+           //判断是否上一页是否禁用
+           if (result.userMsg.pageInfo.hasPreviousPage == false) {
+               students_PrevPageLi.addClass("disabled");
+           } else {
+               //不禁用时放行跳转
+               students_PrevPageLi.click(function() {
+                   to_page(result.userMsg.pageInfo.pageNum - 1);
+               });
+           }
+           students_FirstPageLi.click(function() {
+               to_page(1);
+           });
+           //========================================================
+           //下一页
+           var students_NextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
+           //判断是否下一页是否禁用
+           if (result.userMsg.pageInfo.hasNextPage == false) {
+               students_NextPageLi.addClass("disabled");
+           } else {
+               //不禁用时放行跳转
+               students_NextPageLi.click(function() {
+                   to_page(result.userMsg.pageInfo.pageNum + 1);
+               });
+           }
+           //尾页
+           var students_FinallyPageLi = $("<li></li>").append($("<a></a>").append("尾页").attr("href", "#"));
+           students_FinallyPageLi.click(function() {
+               to_page(result.userMsg.pageInfo.pages);
+           })
+           //=========================================================
+           ul.append(students_FirstPageLi).append(students_PrevPageLi);
+           //遍历连续页
+           $.each(result.userMsg.pageInfo.navigatepageNums, function(index, item) {
+               var numLi = $("<li></li>").append($("<a></a>").append(item));
+               //点击连续也跳转
+               numLi.click(function() {
+                   to_page(item)
+               })
+               //判断是否当前页显示状态
+               if (result.userMsg.pageInfo.pageNum == item) {
+                   numLi.addClass("active");
+               }
+               ul.append(numLi);
+           })
+           //拼接下一页等
+           ul.append(students_NextPageLi).append(students_FinallyPageLi);
+           var navEle = $("<nav></nav>").append(ul);
+           //拼接总分页到div中
+           navEle.appendTo("#students_PagePilot");
+       }
+
+          //bug待修复
+       $(document).on("click","layui-icon-edit",function () {
+           //绑定相应事件id
+           $(".layui-icon-edit").attr("students_ahrefEditTd",$(this).attr("students_ahrefEditTd"));
+
+       })
+
+
+       $(document).on("click",".layui-icon-delete",function () {
+           //绑定按钮
+           var studentsListDeleteBtn = $(this).parents("tr").find("td:eq(1)").text();
+           /*用户-删除*/
+           if(confirm('确定删除信息？')){
+               $.ajax({
+                   url:"http://localhost:8080/StudentList/"+ $(this).attr("students_DeleteBtn"),
+                   type:"DELETE",
+                   success :function(result) {
+                       to_page(currentPage);
+                   }
+               })
+           }else{
+           }
+
+           })
+
+
+        layui.use(['form','layer'], function() {
+            $ = layui.jquery;
+            var form = layui.form
+                , layer = layui.layer;
+
+            //监听搜索按钮
+            form.on('submit(sreach)', function (data) {
+                var stuName = $("#studentssearch_Input").val();
+                if (stuName) {
+                    console.log(data);
+                    console.log($("#studentssearch_Input").val());
+                    //获取当前输入值
+                    $("#studentsSearch_Btn").attr("stuName", stuName);
+
+                    $.ajax({
+                        url: "http://localhost:8080/getByName/" + stuName,
+                        type: "POST",
+                        success: function (result) {
+                            console.log(stuName)
+                            console.log(result)
+                            //解析并显示员工:修复完成
+                            build_students_table(result);
+                            //解析并显示分页信息：修复完成
+                            build_page_students_xblock(result);
+                            //解析并显示分页条
+                            build_page_students_PagePilot(result);
+
+                        }
+                    })
+                }else{
+                    layer.alert('请输入学生姓名，不能为空')
+                }
+                return false;
+            });
+        })
+
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Adminostration System</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="javascript" src="static/layDate-v5.0.9/laydate/laydate.js"></script>
+    <script type="text/javascript" src="static/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="./static/layui/css/layui.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+
+    <![endif]-->
+</head>
+
+<body>
+<div class="x-body layui-anim layui-anim-up " id="roll_list_add">
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>查询学生信息
+            </label>
+            <div class="layui-input-block  ">
+                <form class="layui-form layui-col-md12 x-so" method="post" >
+                <input type="text" name="stuId" id="roll_sreach_input" placeholder="请输入所查询的ID" autocomplete="off" class="layui-input">
+                <button class="layui-btn" id="roll_sreach_Btn"  lay-submit="" lay-filter="roll_sreach"><i class="layui-icon">&#xe615;</i></button>
+                </form>
+            </div>
+
+        </div>
+    <form class="layui-form" method="post" id="roll_list_add_form">
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>学生编号
+            </label>
+            <div class="layui-input-block">
+                <input  type="text" id="stuRollId" name="stuRollId" required  lay-verify="" placeholder="查询存在显示学生编号" autocomplete="off" class="layui-input " disabled>
+            </div>
+        </div>
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>姓名
+            </label>
+            <div class="layui-input-block">
+                <input  type="text" id="stuName" name="stuName" required  lay-verify="" placeholder="查询存在显示学生姓名" autocomplete="off" class="layui-input " disabled>
+            </div>
+        </div>
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>身份证
+            </label>
+            <div class="layui-input-block">
+                <input  type="text" id="stuIdentity" name="stuIdentity" required  lay-verify="" placeholder="查询存在显示身份证" autocomplete="off" class="layui-input " disabled>
+            </div>
+        </div>
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>就读方式
+            </label>
+            <div class="layui-input-block">
+                <input type="radio" name="rollStudyingWay" value="H" title="住校" checked>
+                <input type="radio" name="rollStudyingWay" value="Z" title="走读" >
+            </div>
+        </div>
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>入学方式
+            </label>
+            <div class="layui-input-block">
+                <input type="radio" name="rollStudyingForm" value="L" title="录取" checked>
+                <input type="radio" name="rollStudyingForm" value="J" title="借读">
+            </div>
+        </div>
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>入学日期
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="rollStudyingDate" name="rollStudyingDate" class="layui-input" required  lay-verify="required|date" id="test1" placeholder="点击选取日期" >
+            </div>
+        </div>
+
+        <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>学生来源
+            </label>
+            <div class="layui-input-block">
+                <input type="text" id="rollStudyingSource" name="rollStudyingSource" required   placeholder="请输入你的生源地" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>在学状态
+            </label>
+            <div class="layui-input-block">
+                <input type="radio" name="rollStatus" value="1" title="已注册" checked>
+                <input type="radio" name="rollStatus" value="0" title="已注销" >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label  class="layui-form-label">
+            </label>
+            <button  class="layui-btn" lay-filter="add" lay-submit="">
+                增加
+            </button>
+            <input type="reset" value="重置" class="layui-btn" />
+        </div>
+
+    </form>
+</div>
+<script>
+
+    layui.use(['form','layer'], function(){
+        $ = layui.jquery;
+        var form = layui.form
+            ,layer = layui.layer;
+
+
+        //监听搜索按钮
+        form.on('submit(roll_sreach)', function(data){
+
+            console.log(data);
+            /*console.log($("#studentssearchInput").val());*/
+            //获取当前输入值
+            var stuId = $("#roll_sreach_input").val();
+            $("#roll_sreach_Btn").attr("stuId",stuId);
+            $.ajax({
+                url:"http://localhost:8080/CheckStuId",
+                data:"stuId=" + stuId,
+                type:"POST",
+                success:function (result) {
+                    if (result.code == 100){
+                        layer.alert("当前不存在学生:【 "+stuId+" 】信息");
+                    }else{
+                        console.log(stuId);
+                        search_student(stuId);
+                    }
+                }
+            })
+            return false;
+        });
+
+        function search_student(stuId){
+            $.ajax({
+                url:"http://localhost:8080/Student/" + stuId,
+                type:"GET",
+                success:function (result) {
+                    /*  console.log(result)*/
+                    /* console.log(result.userMsg.stuId.stuName)*/
+                    //回显
+                    var stulist = result.userMsg.stuId;
+                    $("#stuId").val(stulist.stuId);
+                    $("#stuName").val(stulist.stuName);
+                    $("#stuIdentity").val(stulist.stuIdentity);
+
+                }
+            })
+        }
+
+        //新增部分这个
+        //监听提交
+        form.on('submit(add)', function(data){
+           var data = {
+               stuRollId : $("#stuRollId").val().trim(),
+               rollStudyingWay : $("#roll_list_add_form input[name=rollStudyingWay]").val(),
+               rollStudyingForm : $("#roll_list_add_form input[name=rollStudyingForm]").val(),
+               rollStudyingDate :$("#rollStudyingDate").val(),
+               rollStudyingSource : $("#rollStudyingSource").val(),
+               rollStatus : $("#roll_list_add_form input[name=rollStatus]").val(),
+            };
+            console.log(JSON.stringify(data));
+
+            $.ajax({
+                url:"http://localhost:8080/Roll",
+                data:JSON.stringify(data),
+                type:"POST",
+                dataType:"json",
+                contentType:"application/json",
+                success:function (result) {
+                }
+            })
+            layer.alert("增加成功", {icon: 6},function () {
+                // 获得frame索引
+                var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+                parent.layer.close(index);
+                //调用父级方法
+                parent.to_page(9999999)
+            });
+            return false;
+        });
+    });
+
+    //日期控件
+    layui.use('laydate', function() {
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#test1' //指定元素
+            ,min: '1900-1-1'
+            ,max: '2099-12-31'
+        });
+    });
+
+
+</script>
+
+</body>
+
+</html>

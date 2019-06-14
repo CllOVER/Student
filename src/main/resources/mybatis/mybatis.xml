@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!-- myabits全局配置文件 -->
+<configuration>
+
+    <!-- 使用驼峰命名 -->
+    <settings>
+        <setting name="cacheEnabled" value="true" /><!-- 全局映射器启用缓存 -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
+    <typeAliases>
+        <package name="cn.cllover.administration.pojo" />
+    </typeAliases>
+    <!-- pagehelper分页 -->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 跳转不超过上下限    -->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+</configuration>

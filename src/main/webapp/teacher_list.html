@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>Adminostration System</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+    <script type="text/javascript" src="static/jquery-3.3.1/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="./static/layui/css/layui.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-nav">
+      <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a>
+          <cite>教师信息</cite></a>
+      </span>
+      <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+        <i class="layui-icon" style="line-height:30px">ဂ</i></a>
+    </div>
+    <div class="x-body">
+      <div class="layui-row">
+        <form class="layui-form layui-col-md12 x-so">
+          <input class="layui-input" placeholder="开始日" name="start" id="start">
+          <input class="layui-input" placeholder="截止日" name="end" id="end">
+          <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+          <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+        </form>
+      </div>
+      <xblock>
+        <button class="layui-btn" onclick="x_admin_show('添加教师信息','./teacher-list-add.html',600,400)"><i class="layui-icon"></i>添加</button>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="teacher_divtotal"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray" id="teacher_divPage"></div>
+        <div class="x-right layui-btn layui-btn-disabled layui-bg-gray"  id="teacher_divPageNum"></div>
+      </xblock>
+      <table class="layui-table" id="Teachers_tableList">
+        <thead>
+          <tr>
+            <th>
+              <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
+            </th>
+            <th>工号</th>
+            <th>教师姓名</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>出生日期</th>
+            <th>身份证</th>
+            <th>手机号</th>
+            <th>民族</th>
+            <th>邮箱</th>
+            <th>家庭住址</th>
+            <th>教授偏好</th>
+            <th>描述</th>
+            <th>是否党员</th>
+            <th>状态</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+      <div class="page">
+        <div id="teacher_PagePilot">
+
+        </div>
+      </div>
+
+    </div>
+    <script>
+
+      layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+      });
+
+       /*用户-停用*/
+    $(".tea_status").click(function () {
+
+          layer.confirm('确认要停用吗？',function(index){
+
+              if($(obj).attr('title')=='启用'){
+
+                //发异步把用户状态进行更改
+                $(obj).attr('title','停用')
+                $(obj).find('i').html('&#xe62f;');
+
+                $(obj).parents("tr").find(".td-status").find('span').addClass('layui-btn-disabled').html('已停用');
+                layer.msg('已停用!',{icon: 5,time:1000});
+
+              }else{
+                $(obj).attr('title','启用')
+                $(obj).find('i').html('&#xe601;');
+
+                $(obj).parents("tr").find(".td-status").find('span').removeClass('layui-btn-disabled').html('已启用');
+                layer.msg('已启用!',{icon: 5,time:1000});
+              }
+              
+          });
+
+      })
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $(obj).parents("tr").remove();
+              layer.msg('已删除!',{icon:1,time:1000});
+          });
+      }
+        //首页点击自动跳转第一页
+        $(function() {
+            to_page(1)
+        });
+
+        //分页条信息跳转函数
+        function to_page(pn) {
+            $.ajax({
+                url : "http://localhost:8080/TeachersLists",
+                data : "pn=" + pn,
+                type : "GET",
+                success : function(result) {
+                    console.log(result)
+                    //解析并显示员工
+                    build_teacher_table(result);
+                    //解析并显示分页信息
+                    build_page_teacher_xblock(result);
+                    //解析并显示分页条
+                    build_page_teacher_PagePilot(result);
+                }
+            });
+        }
+
+        //学生个人基础信息列表
+
+        function build_teacher_table(result){
+            //清空缓存
+            $("#Teachers_tableList tbody").empty();
+            //console.log()
+            //取出列表信息
+            var teachers = result.pageInfo.list;
+            $.each(teachers,function (index,item) {
+
+                var teachers_checkboxDiv = $("<div></div>").addClass("layui-unselect layui-form-checkbox").attr("lay-skin", "primary").attr("data-id", "2");
+                var teachers_checkboxI = $("<i></i>").addClass("layui-icon").append("&#xe605;");
+                var teachers_checkboxListTd = $("<td></td>").append(teachers_checkboxDiv).append(teachers_checkboxI);
+
+                var teachers_teaIdListTd = $("<td>" + item.teaId + "</td>");
+                var teachers_teaNameListTd = $("<td>" + item.teaName + "</td>");
+                var teachers_teaSexListTd = $("<td></td>").append(item.teaSex=='f'? "男": "女");
+                var teachers_teaAgeListTd = $("<td>" + item.teaAge + "</td>");
+                var teachers_teaBirthdayListTd = $("<td>" + item.teaBirthday + "</td>");
+                var teachers_teaIdentityListTd = $("<td>" + item.teaIdentity + "</td>");
+                var teachers_teaPhoneListTd = $("<td>" + item.teaPhone + "</td>");
+                var teachers_teaNationIdListTd = $("<td>" + item.nation.nationName + "</td>")
+                var teachers_teaEmailListTd = $("<td>" + item.teaEmail + "</td>");
+                var teachers_teaAddressListTd = $("<td>" + item.teaAddress + "</td>");
+                var teachers_teaHobbyListTd = $("<td>" + item.teaHobby + "</td>");
+                var teachers_teaDescListTd = $("<td>" + item.teaDesc + "</td>");
+                var teachers_teaPartyMemberListTd = $("<td></td>").append(item.teaPartyMember=='1'? "是": "否");
+                var teachers_teaStatusListTd = $("<td></td>").append(item.teaStatus=='1'?
+                    "<span class=\"layui-btn layui-btn-normal layui-btn-mini \" style='background-color: #5FB878' >已注册</span></td>":
+                    "<span class=\"layui-btn layui-btn-normal layui-btn-mini layui-bg-red\">已离职</span></td>");
+
+                var teachers_ahrefDeleteTd = $("<a></a>").attr("href", "#").
+                append("<i></i>").addClass("layui-icon layui-icon-delete").
+                attr("title", "删除信息").attr("style", "font-size: 20px; color: #FF5722;");
+                //绑定id
+                teachers_ahrefDeleteTd.attr("teachers_DeleteBtn", item.teaId);
+
+                var teachers_ahrefSelectTd = $("<a></a>").attr("href", "#").
+                append("<i></i>").addClass("layui-icon layui-icon-download-circle tea_status").
+                attr("title", "点击注销").attr("style", "font-size: 20px; color: #2F4056;");
+                //绑定id
+                teachers_ahrefSelectTd.attr("teachers_SelectBtn", item.teaId);
+
+                var teachersahrefTd = $("<td></td>").append(teachers_ahrefDeleteTd).append(teachers_ahrefSelectTd);
+                //append方法执行完以后返回原来的元素
+                $("<tr></tr>").append(teachers_checkboxListTd).append(teachers_teaIdListTd).append(teachers_teaNameListTd)
+                    .append(teachers_teaSexListTd).append(teachers_teaAgeListTd).append(teachers_teaBirthdayListTd)
+                    .append(teachers_teaIdentityListTd).append(teachers_teaPhoneListTd)
+                    .append(teachers_teaNationIdListTd).append(teachers_teaEmailListTd)
+                    .append(teachers_teaAddressListTd).append(teachers_teaHobbyListTd)
+                    .append(teachers_teaDescListTd).append(teachers_teaPartyMemberListTd)
+                    .append(teachers_teaStatusListTd)
+                    .append(teachersahrefTd).appendTo("#Teachers_tableList");
+            })
+        }
+        //解析并显示分页信息
+        function build_page_teacher_xblock(result) {
+            $("#teacher_divPageNum").empty();
+            $("#teacher_divPage").empty();
+            $("#teacher_divtotal").empty();
+            $("#teacher_divPageNum").append("当前第").append("<span>"+result.pageInfo.pageNum+"</span>").append("页");
+            $("#teacher_divPage").append("共").append("<span>"+result.pageInfo.pages+"</span>").append("页信息");
+            $("#teacher_divtotal").append("共").append("<span>"+result.pageInfo.total+"</span>").append("条信息");
+            currentPage = result.pageInfo.pageNum;
+            totalPage = result.pageInfo.total * 99;
+        }
+        //解析并显示分页条
+        function build_page_teacher_PagePilot(result){
+
+            //首页
+            $("#teacher_PagePilot").empty();
+            var ul = $("<ul></ul>").addClass("pagination");
+            var teacher_FirstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href", "#"));
+            var teacher_PrevPageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+            //判断是否上一页是否禁用
+            if (result.pageInfo.hasPreviousPage == false) {
+                teacher_PrevPageLi.addClass("disabled");
+            } else {
+                //不禁用时放行跳转
+                teacher_PrevPageLi.click(function() {
+                    to_page(result.pageInfo.pageNum - 1);
+                });
+            }
+            teacher_FirstPageLi.click(function() {
+                to_page(1);
+            });
+            //========================================================
+            //下一页
+            var teacher_NextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
+            //判断是否下一页是否禁用
+            if (result.pageInfo.hasNextPage == false) {
+                teacher_NextPageLi.addClass("disabled");
+            } else {
+                //不禁用时放行跳转
+                teacher_NextPageLi.click(function() {
+                    to_page(result.pageInfo.pageNum + 1);
+                });
+            }
+            //尾页
+            var teacher_FinallyPageLi = $("<li></li>").append($("<a></a>").append("尾页").attr("href", "#"));
+            teacher_FinallyPageLi.click(function() {
+                to_page(result.pageInfo.pages);
+            })
+            //=========================================================
+            ul.append(teacher_FirstPageLi).append(teacher_PrevPageLi);
+            //遍历连续页
+            $.each(result.pageInfo.navigatepageNums, function(index, item) {
+                var numLi = $("<li></li>").append($("<a></a>").append(item));
+                //点击连续也跳转
+                numLi.click(function() {
+                    to_page(item)
+                })
+                //判断是否当前页显示状态
+                if (result.pageInfo.pageNum == item) {
+                    numLi.addClass("active");
+                }
+                ul.append(numLi);
+            })
+            //拼接下一页等
+            ul.append(teacher_NextPageLi).append(teacher_FinallyPageLi);
+            var navEle = $("<nav></nav>").append(ul);
+            //拼接总分页到div中
+            navEle.appendTo("#teacher_PagePilot");
+        }
+
+
+    </script>
+
+  </body>
+
+</html>

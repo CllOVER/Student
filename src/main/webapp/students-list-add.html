@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>Adminostration System</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+      <script type="text/javascript" src="./lib/layui/layui.js" charset="utf-8"></script>
+      <script type="javascript" src="static/layDate-v5.0.9/laydate/laydate.js"></script>
+      <script type="text/javascript" src="static/jquery-3.3.1/jquery-3.3.1.js"></script>
+      <link rel="stylesheet" href="./static/layui/css/layui.css">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/font.css">
+    <link rel="stylesheet" href="./css/xadmin.css">
+    <script type="text/javascript" src="./js/xadmin.js"></script>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+
+    <![endif]-->
+  </head>
+  
+  <body>
+    <div class="x-body layui-anim layui-anim-up " id="students_list_add">
+        <form class="layui-form" method="post" id="students_list_add_form">
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>姓名
+                </label>
+                <div class="layui-input-block  ">
+                    <input  type="text" name="stuName" required  lay-verify="name" placeholder="请输入学生姓名" autocomplete="off" class="layui-input ">
+                </div>
+
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+            <label class="layui-form-label">
+                <span class="x-red">*</span>性别
+            </label>
+            <div class="layui-input-block">
+                <input type="radio" name="stuSex" value="男" title="男">
+                <input type="radio" name="stuSex" value="女" title="女" checked>
+            </div>
+        </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>年龄
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuAge" required  lay-verify="required|number" placeholder="请输入真实年龄" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>手机号
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuPhone" required  lay-verify="required|phone" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>出生日期
+                </label>
+                <div class="layui-input-block">
+                    <input type="text"name="stuBirthday" class="layui-input" required  lay-verify="required|date" id="test1" placeholder="点击选取日期" >
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>身份证号
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuIdentity" required  lay-verify="required|identity" placeholder="请输入你的身份证号码" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>民族
+                </label>
+                <div class="layui-input-block">
+                    <select name="stuNationId" lay-verify="required" id="selectNationList">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    <span class="x-red">*</span>邮箱
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuEmail" required  lay-verify="required|email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                   QQ号
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuQq"  placeholder="请输入QQ" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    现住址
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuHome"  placeholder="请输入现在的居住地址" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    户籍所在地
+                </label>
+                <div class="layui-input-block">
+                    <input type="text" name="stuAddress"  placeholder="请输入与身份证所对应的户籍所在地" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    是否团员
+                </label>
+                <div class="layui-input-block">
+                    <input type="radio" name="stuLeagueMember" value="是" title="是">
+                    <input type="radio" name="stuLeagueMember" value="否" title="否" checked>
+                </div>
+            </div>
+
+            <div class=" layui-col-md6 layui-form-item">
+                <label class="layui-form-label">
+                    是否党员
+                </label>
+                <div class="layui-input-block">
+                    <input type="radio" name="stuPartyMember" value="是" title="是">
+                    <input type="radio" name="stuPartyMember" value="否" title="否" checked>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label  class="layui-form-label">
+                </label>
+                <button  class="layui-btn" lay-filter="add" lay-submit="">
+                    增加
+                </button>
+                <input type="reset" value="重置" class="layui-btn" />
+            </div>
+
+      </form>
+    </div>
+    <script>
+
+
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+            var form = layui.form
+                ,layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+                name: [/^[\u4E00-\u9FA5A-Za-z]+$/,'姓名必须为中文或者英文'],
+            });
+
+            //新增部分这个
+            //监听提交
+            form.on('submit(add)', function(data){
+                var param=data.field;//定义临时变量获取表单提交过来的数据，非json格式
+                console.log(JSON.stringify(param));
+                console.log(data);
+                    $.ajax({
+                        url:"http://localhost:8080/Student",
+                        data:JSON.stringify(param),
+                        type:"POST",
+                        dataType:"json",
+                        contentType:"application/json",
+                        success:function (result) {
+                        }
+                    })
+                layer.alert("增加成功", {icon: 6},function () {
+                    // 获得frame索引
+                    var index = parent.layer.getFrameIndex(window.name);
+                    //关闭当前frame
+                    parent.layer.close(index);
+                    //调用父级方法
+                    parent.to_page(9999999)
+                });
+                return false;
+            });
+        });
+
+        //日期控件
+        layui.use('laydate', function() {
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#test1' //指定元素
+                ,min: '1900-1-1'
+                ,max: '2099-12-31'
+            });
+        });
+
+            $(document).ready(function () {
+                    $.ajax({
+                            url:"http://localhost:8080/NationList",
+                            type:"GET",
+                            success: function (result) {
+                            $.each(result.userMsg.NationList,function () {
+                                var optionNationList = $("<option></option>").append(
+                                this.nationName).attr("value", this.nationId);
+                                optionNationList.appendTo("#selectNationList");
+                                })
+                                //重新渲染表单
+                                layui.use('form', function(){
+                                    var form = layui.form;  //只有执行了这一步，部分表单元素才会自动修饰成功
+                                    form.render();
+                                });
+                            }
+                    })
+                })
+    </script>
+
+  </body>
+
+</html>
