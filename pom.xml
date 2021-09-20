@@ -11,7 +11,7 @@
 
   <!-- 版本控制 -->
   <properties>
-    <shiro.version>1.4.0</shiro.version>
+    <shiro.version>1.8.0</shiro.version>
     <spring.version>4.3.18.RELEASE</spring.version>
   </properties>
 
