@@ -12,7 +12,7 @@
   <!-- 版本控制 -->
   <properties>
     <shiro.version>1.4.0</shiro.version>
-    <spring.version>4.3.18.RELEASE</spring.version>
+    <spring.version>5.3.18</spring.version>
   </properties>
 
 
